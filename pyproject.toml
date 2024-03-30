@@ -7,6 +7,8 @@ classifiers = [
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Typing :: Typed",
   "Intended Audience :: Information Technology",
   "Intended Audience :: Science/Research",
@@ -26,7 +28,7 @@ click = "^8.1.0"
 pydantic = "^1.9.0"
 python = "^3.8"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^22.6.0"
 coverage = "^6.1.2"
 flake8 = "^4.0.1"
@@ -38,6 +40,7 @@ mypy = "^0.910"
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
 pytest-xdist = "^2.5.0"
+tox = "^4.14.2"
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -66,3 +69,35 @@ testpaths = ["tests"]
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+skipsdist = true
+envlist =
+    py38
+    py39
+    py310
+    py311
+    py312
+    doc
+    coverage
+
+[testenv]
+allowlist_externals = poetry
+commands =
+    poetry install
+    poetry run pytest {posargs}
+
+[testenv:doc]
+commands =
+    poetry install
+    poetry run mkdocs build
+
+[testenv:coverage]
+commands =
+    poetry install
+    poetry run pytest --cov --cov-report term:skip-covered {posargs:-n auto}
+    poetry run coverage html
+"""
